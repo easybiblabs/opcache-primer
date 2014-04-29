@@ -1,0 +1,15 @@
+{
+    "name": "easybib/opcache-primer",
+    "description": "Tooling to prime Zend OPcache during deploys",
+    "license": "BSD-2-Clause",
+    "authors": [
+        {
+            "name": "Till Klampaeckel",
+            "email": "till@php.net"
+        }
+    ],
+    "require": {
+        "PHP": ">=5.5.0",
+        "ext-Zend-OPcache": "*"
+    }
+}
