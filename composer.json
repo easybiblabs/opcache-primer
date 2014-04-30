@@ -8,6 +8,11 @@
             "email": "till@php.net"
         }
     ],
+    "autoload": {
+        "psr-0": {
+            "EasyBib\\OPcache": "src"
+        }
+    },
     "require": {
         "PHP": ">=5.5.0",
         "ext-Zend-OPcache": "*"
