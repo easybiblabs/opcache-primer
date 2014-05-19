@@ -58,7 +58,7 @@ class Prime
             $base = '/vagrant_www';
         }
 
-        if (strpos($base, $path) !== 0) {
+        if (strpos($path, $base) !== 0) {
             return $this->error_out("Incorrect path: {$path}");
         }
 
