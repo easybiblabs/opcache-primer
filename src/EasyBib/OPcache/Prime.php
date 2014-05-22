@@ -24,21 +24,16 @@ class Prime
     /**
      * @var string
      */
-    private $env;
-
-    /**
-     * @var string
-     */
     private $path;
 
     /**
-     * @param string $env
+     * @param string $base
      *
      * @return self
      */
-    public function __construct($env)
+    public function __construct($base)
     {
-        $this->env = $env;
+        $this->base = $base;
     }
 
     /**
@@ -48,22 +43,16 @@ class Prime
      */
     public function setPath($path)
     {
-        $path = realpath($path);
         if (empty($path)) {
-            $this->error_out("Empty path parameter.");
+            return $this->error_out("Empty path parameter.");
         }
 
-        $base = '/srv/www/easybib/releases';
-        if ($this->env  == 'vagrant') {
-            $base = '/vagrant_www';
-        }
-
-        if (strpos($path, $base) !== 0) {
-            return $this->error_out("Incorrect path: {$path}");
-        }
-
-        if (!is_readable($path) || !is_dir($path)) {
+        if (!is_readable($path)) {
             return $this->error_out("Could not open: {$path}");
+        }
+
+        if (!is_dir($path)) {
+            return $this->error_out("Path is not a directory: {$path}");
         }
 
         $this->path = $path;
@@ -89,6 +78,14 @@ class Prime
         }
 
         return $return;
+    }
+
+    public function validate()
+    {
+        if (strpos($this->path, $this->base) !== 0) {
+            return $this->error_out("Incorrect path: {$this->path}");
+        }
+        return 0;
     }
 
     private function error_out($msg)
