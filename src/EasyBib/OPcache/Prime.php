@@ -53,15 +53,15 @@ class Prime
     public function setPath($path)
     {
         if (empty($path)) {
-            return $this->error_out("Empty path parameter.");
+            return $this->logError("Empty path parameter.");
         }
 
         if (!is_readable($path)) {
-            return $this->error_out("Could not open: {$path}");
+            return $this->logError("Could not open: {$path}");
         }
 
         if (!is_dir($path)) {
-            return $this->error_out("Path is not a directory: {$path}");
+            return $this->logError("Path is not a directory: {$path}");
         }
 
         $this->path = $path;
@@ -92,12 +92,12 @@ class Prime
     public function validate()
     {
         if (strpos($this->path, $this->base) !== 0) {
-            return $this->error_out("Incorrect path: {$this->path}");
+            return $this->logError("Incorrect path: {$this->path}");
         }
         return 0;
     }
 
-    private function error_out($msg)
+    private function logError($msg)
     {
         if (null === $this->logger) {
             // silence is golden
