@@ -67,6 +67,12 @@ class PrimeTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(1, $primer->validate());
     }
 
+    public function testPsrLogger()
+    {
+        $primer = new Prime('foo', new \Psr\Log\NullLogger);
+        $this->assertInstanceOf('EasyBib\OPcache\Prime', $primer);
+    }
+
     /**
      * @param string $base
      * @param string $path
