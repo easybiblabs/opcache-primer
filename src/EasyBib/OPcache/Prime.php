@@ -43,6 +43,7 @@ class Prime
     {
         $this->base = $base;
         $this->logger = $logger;
+        $this->logInfo("Base: {$base}");
     }
 
     /**
@@ -79,22 +80,35 @@ class Prime
 
         $files = array_unique(require $this->path . '/vendor/composer/autoload_classmap.php');
         foreach ($files as $file) {
+            $this->logInfo("Priming {$file}.");
             if (@opcache_compile_file($file)) {
+                $this->logInfo("Success!");
                 continue;
             }
             // ignore errors
-            //return $this->error_out("Could not compile: {$file}");
+            $this->logError("Could not compile: {$file}");
         }
 
         return $return;
     }
 
+    /**
+     * @return int
+     */
     public function validate()
     {
         if (strpos($this->path, $this->base) !== 0) {
             return $this->logError("Incorrect path: {$this->path}");
         }
         return 0;
+    }
+
+    private function logInfo($msg)
+    {
+        if (null === $this->logger) {
+            return;
+        }
+        $this->logger->info($msg);
     }
 
     private function logError($msg)
