@@ -10,6 +10,8 @@
  */
 namespace EasyBib\OPcache;
 
+use Psr\Log\LoggerInterface;
+
 /**
  * EasyBib\OPcache\Prime
  *
@@ -22,18 +24,25 @@ namespace EasyBib\OPcache;
 class Prime
 {
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @var string
      */
     private $path;
 
     /**
-     * @param string $base
+     * @param string          $base
+     * @param LoggerInterface $logger
      *
      * @return self
      */
-    public function __construct($base)
+    public function __construct($base, LoggerInterface $logger = null)
     {
         $this->base = $base;
+        $this->logger = $logger;
     }
 
     /**
@@ -90,7 +99,12 @@ class Prime
 
     private function error_out($msg)
     {
-        echo $msg . PHP_EOL;
+        if (null === $this->logger) {
+            // silence is golden
+            return 1;
+        }
+
+        $this->logger->error($msg);
         return 1;
     }
 }
