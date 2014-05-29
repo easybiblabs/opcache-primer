@@ -23,6 +23,6 @@
         "mikey179/vfsStream": "*"
     },
     "suggest": {
-        "monolog/monolog": "For logging!"
+        "monolog/monolog": "1.3.0+ for logging!"
     }
 }
