@@ -24,6 +24,11 @@ use Psr\Log\LoggerInterface;
 class Prime
 {
     /**
+     * @var string
+     */
+    private $base;
+
+    /**
      * @var LoggerInterface
      */
     private $logger;
