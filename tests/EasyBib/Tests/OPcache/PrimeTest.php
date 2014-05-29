@@ -67,6 +67,37 @@ class PrimeTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(1, $primer->validate());
     }
 
+    public function testValidate()
+    {
+        vfsStream::setup(
+            $this->vfsRoot,
+            null,
+            [
+                'var' => [
+                    'www' => [
+                        'app' => [
+                            '12hdh3' => [],
+                        ],
+                    ],
+                 ],
+                 'root' => [],
+            ]
+        );
+
+        $path = $this->getFakePath('/root');
+        $base = $this->getFakePath('/var/www');
+
+        $primer = new Prime($base);
+        $primer->setPath($path);
+
+        $this->assertSame(1, $primer->validate());
+
+        $path = $this->getFakePath('/var/www/app/12hdh3');
+        $primer->setPath($path);
+
+        $this->assertSame(0, $primer->validate());
+    }
+
     public function testPsrLogger()
     {
         $primer = new Prime('foo', new \Psr\Log\NullLogger);
