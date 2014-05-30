@@ -41,6 +41,29 @@ run "cd #{release_path} && #{composer_command} && #{prime_command}"
 
 Bonus points for a proper httpd configuration which blocks access to the script.
 
+
+### Cache file
+
+We use the following target to populate the cachefile:
+
+```
+opcache-cache:
+    find . ! \( \
+    -ipath "*tests/*" \
+    -or -ipath "*test/*" \
+    -or -ipath "*bin*" \
+    -or -path "*/phpunit/*" \
+    \) \
+    -type f -name "*.php" -o -name "*.phtml" -o -name "*.inc" \
+    > ./var/opcache.cache
+```
+
+Then continue in PHP:
+
+```php
+$prime->setCacheFile('./var/opcache.cache');
+```
+
 ## License
 
 BSD-2-Clause

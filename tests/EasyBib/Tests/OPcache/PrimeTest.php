@@ -122,11 +122,69 @@ class PrimeTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($status, $primer->setPath($fakePath));
     }
 
+    public function testCacheFile()
+    {
+        vfsStream::setup(
+            $this->vfsRoot,
+            null,
+            [
+                'srv' => [
+                    'www' => [
+                        'app-name' => [
+                            'rev-12345' => [
+                                'var' => [],
+                                'public' => [],
+                            ],
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        $base = $this->getFakePath('/srv/www');
+        $appRoot = $base . '/app-name/rev-12345';
+
+        // create some files
+        foreach (
+            [
+                'index.php' => '<?php echo "hello world";',
+                'phpinfo.php' => '<?php phpinfo(); ?>',
+                'till.php' => '<?php class Till {} ?>',
+            ]
+            as $file => $content
+        ) {
+
+            $this->createFile($appRoot . '/public/' . $file, $content);
+        }
+
+        // create opcache.cache file
+
+        $cacheContent  = $appRoot . '/public/index.php' . "\n";
+        $cacheContent .= $appRoot . '/public/phpinfo.php' . "\n";
+        $cacheContent .= $appRoot . '/public/till.php' . "\n";
+
+        $cacheFile = $appRoot . '/var/opcache.cache';
+        $this->createFile(
+            $cacheFile,
+            $cacheContent
+        );
+
+        $primer = new Prime($base);
+        $primer->setPath($appRoot);
+
+        $this->assertSame(0, $primer->setCacheFile($cacheFile));
+        $this->assertSame(0, $primer->doPopulate());
+    }
 
     public function testSimple()
     {
         vfsStream::setup('my-root', 'null', ['foo' => ['bar' => []]]);
         $this->assertTrue(file_exists(vfsStream::url('my-root/foo')));
+    }
+
+    private function createFile($path, $content)
+    {
+        file_put_contents($path, $content);
     }
 
     private function getFakePath($path)

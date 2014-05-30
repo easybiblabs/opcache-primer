@@ -29,6 +29,11 @@ class Prime
     private $base;
 
     /**
+     * @var string
+     */
+    private $cacheFile;
+
+    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -49,6 +54,23 @@ class Prime
         $this->base = $base;
         $this->logger = $logger;
         $this->log("Base: {$base}", 'debug');
+    }
+
+    /**
+     * This overrides the usage on {@link self::getFilesFromAutoload()}.
+     *
+     * @param string $path
+     *
+     * @return int
+     */
+    public function setCacheFile($path)
+    {
+        if (!file_exists($path)) {
+            return $this->log("Path does not exist: {$path}", 'error');
+        }
+
+        $this->cacheFile = $path;
+        return 0;
     }
 
     /**
@@ -85,13 +107,23 @@ class Prime
     {
         $return = 0;
 
-        $files = $this->getFilesFromAutoload();
+        if (null === $this->cacheFile) {
+            $files = $this->getFilesFromAutoload();
+        } else {
+            $files = array_unique(explode("\n", file_get_contents($this->cacheFile)));
+        }
+
         foreach ($files as $file) {
+            if (empty($file)) {
+                continue;
+            }
+
             $this->log("Priming {$file}.", 'info');
             if (@opcache_compile_file($file)) {
                 $this->log("Success!", 'info');
                 continue;
             }
+
             // ignore errors
             $this->log("Could not compile: {$file}", 'error');
         }
