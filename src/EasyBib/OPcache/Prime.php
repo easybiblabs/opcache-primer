@@ -48,7 +48,7 @@ class Prime
     {
         $this->base = $base;
         $this->logger = $logger;
-        $this->logInfo("Base: {$base}");
+        $this->log("Base: {$base}", 'debug');
     }
 
     /**
@@ -59,16 +59,18 @@ class Prime
     public function setPath($path)
     {
         if (empty($path)) {
-            return $this->logError("Empty path parameter.");
+            return $this->log("Empty path parameter.", 'error');
         }
 
         if (!is_readable($path)) {
-            return $this->logError("Could not open: {$path}");
+            return $this->log("Could not open: {$path}", 'error');
         }
 
         if (!is_dir($path)) {
-            return $this->logError("Path is not a directory: {$path}");
+            return $this->log("Path is not a directory: {$path}", 'error');
         }
+
+        $this->log("Path: {$path}", 'debug');
 
         $this->path = $path;
         return 0;
@@ -83,15 +85,15 @@ class Prime
     {
         $return = 0;
 
-        $files = array_unique(require $this->path . '/vendor/composer/autoload_classmap.php');
+        $files = $this->getFilesFromAutoload();
         foreach ($files as $file) {
-            $this->logInfo("Priming {$file}.");
+            $this->log("Priming {$file}.", 'info');
             if (@opcache_compile_file($file)) {
-                $this->logInfo("Success!");
+                $this->log("Success!", 'info');
                 continue;
             }
             // ignore errors
-            $this->logError("Could not compile: {$file}");
+            $this->log("Could not compile: {$file}", 'error');
         }
 
         return $return;
@@ -103,27 +105,30 @@ class Prime
     public function validate()
     {
         if (strpos($this->path, $this->base) !== 0) {
-            return $this->logError("Incorrect path: {$this->path}");
+            return $this->log("Incorrect path: {$this->path}", 'error');
         }
         return 0;
     }
 
-    private function logInfo($msg)
+    private function getFilesFromAutoload()
     {
-        if (null === $this->logger) {
-            return;
-        }
-        $this->logger->info($msg);
+        $files = array_unique(require $this->path . '/vendor/composer/autoload_classmap.php');
+        return $files;
     }
 
-    private function logError($msg)
+    private function log($msg, $level = 'debug')
     {
-        if (null === $this->logger) {
-            // silence is golden
-            return 1;
+        $returnCode = 0;
+        if ('error' === $level) {
+            $returnCode = 1;
         }
 
-        $this->logger->error($msg);
-        return 1;
+
+        if (null === $this->logger) {
+            return $returnCode;
+        }
+        $this->logger->$level($msg);
+
+        return $returnCode;
     }
 }
