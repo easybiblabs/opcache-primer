@@ -11,9 +11,15 @@ Do something like this in your frontcontroller (`index.php`):
 ```php
 if ($_SERVER['SCRIPT_NAME'] == '/opcache/prime' && $_SERVER['SERVER_ADDR'] == '127.0.0.1') {
     require dirname(__DIR__) . '/vendor/autoload.php';
-    $prime = new \EasyBib\OPcache\Prime($bibEnv);
+    $prime = new \EasyBib\OPcache\Prime(
+        '/srv/www/app'
+    );
 
     if (0 !== ($status = $prime->setPath($_GET['p']))) {
+        exit($status);
+    }
+
+    if (0 !== ($status = $prime->validate())) {
         exit($status);
     }
 
