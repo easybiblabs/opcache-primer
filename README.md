@@ -21,6 +21,9 @@ if ($_SERVER['SCRIPT_NAME'] == '/opcache/prime' && $_SERVER['SERVER_ADDR'] == '1
 }
 ```
 
+If you want to clear the opcache and varcache before, use `$prime->resetAll()` instead of
+`$prime->doPopulate()`.
+
 Add the following to your deploy hook (AWS OpsWorks):
 
 ```ruby
