@@ -102,7 +102,7 @@ class Prime
      *
      * @return boolean
      */
-    public function clearVarcache()
+    public function doClearVarcache()
     {
         if (function_exists("apcu_clear_cache")) {
             return apcu_clear_cache();
@@ -119,7 +119,7 @@ class Prime
      *
      * @return boolean
      */
-    public function resetAll()
+    public function doResetAll()
     {
         if (function_exists("opcache_reset")) {
             opcache_reset();
