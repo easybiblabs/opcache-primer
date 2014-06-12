@@ -125,7 +125,7 @@ class Prime
             opcache_reset();
         }
 
-        $varClear = $this->clearVarcache();
+        $varClear = $this->doClearVarcache();
         $opPopulate = $this->doPopulate();
 
         return $varClear && $opPopulate;
