@@ -77,11 +77,11 @@ class Prime
     /**
      * Uses composer's classmap to prime all files.
      *
-     * @return boolean
+     * @return int
      */
     public function doPopulate()
     {
-        $return = true;
+        $return = 0;
 
         $files = array_unique(require $this->path . '/vendor/composer/autoload_classmap.php');
         foreach ($files as $file) {
@@ -100,24 +100,26 @@ class Prime
     /**
      * Clears APC/APCU varcache.
      *
-     * @return boolean
+     * @return int
      */
     public function doClearVarcache()
     {
         if (function_exists("apcu_clear_cache")) {
-            return apcu_clear_cache();
+            apcu_clear_cache();
+            return 0;
         } elseif (function_exists("apc_clear_cache")) {
-            return apc_clear_cache("user");
+            apc_clear_cache("user");
+            return 0;
         } else {
             $this->logError("Could not clear varcache - neither apc nor apcu found");
-            return false;
+            return 1;
         }
     }
 
     /**
      * Clears opcache and varcache, repopulates opcache
      *
-     * @return boolean
+     * @return int
      */
     public function doResetAll()
     {
@@ -128,7 +130,7 @@ class Prime
         $varClear = $this->doClearVarcache();
         $opPopulate = $this->doPopulate();
 
-        return $varClear && $opPopulate;
+        return $varClear + $opPopulate;
     }
 
     /**
