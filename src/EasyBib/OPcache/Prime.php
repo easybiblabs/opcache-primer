@@ -98,6 +98,42 @@ class Prime
     }
 
     /**
+     * Clears APC/APCU varcache.
+     *
+     * @return int
+     */
+    public function doClearVarcache()
+    {
+        if (function_exists("apcu_clear_cache")) {
+            apcu_clear_cache();
+            return 0;
+        } elseif (function_exists("apc_clear_cache")) {
+            apc_clear_cache("user");
+            return 0;
+        } else {
+            $this->logError("Could not clear varcache - neither apc nor apcu found");
+            return 1;
+        }
+    }
+
+    /**
+     * Clears opcache and varcache, repopulates opcache
+     *
+     * @return int
+     */
+    public function doResetAll()
+    {
+        if (function_exists("opcache_reset")) {
+            opcache_reset();
+        }
+
+        $varClear = $this->doClearVarcache();
+        $opPopulate = $this->doPopulate();
+
+        return $varClear + $opPopulate;
+    }
+
+    /**
      * @return int
      */
     public function validate()
