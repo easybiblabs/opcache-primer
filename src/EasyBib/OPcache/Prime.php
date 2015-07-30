@@ -77,6 +77,21 @@ class Prime
     }
 
     /**
+     * Removes files from the opcache. This assumes that the files still
+     * exist on the instance in a previous checkout.
+     *
+     * @return int
+     */
+    public function doClean()
+    {
+        $files = $this->getFilesFromAutoload();
+        foreach ($files as $file) {
+            opcache_invalidate($file, true);
+        }
+
+        return 0;
+    }
+    /**
      * Uses composer's classmap to prime all files.
      *
      * @return int
@@ -120,6 +135,8 @@ class Prime
 
     /**
      * Clears opcache and varcache, repopulates opcache
+     *
+     * This should probably not be used, ever.
      *
      * @return int
      */
