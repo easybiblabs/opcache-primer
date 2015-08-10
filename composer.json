@@ -16,6 +16,7 @@
     "require": {
         "PHP": ">=5.5.0",
         "ext-Zend-OPcache": "*",
+        "crunch/fastcgi": "v1.0.1",
         "psr/log": "dev-master"
     },
     "require-dev": {
