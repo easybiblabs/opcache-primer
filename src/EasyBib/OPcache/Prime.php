@@ -165,7 +165,14 @@ class Prime
 
     private function getFilesFromAutoload()
     {
-        $files = array_unique(require $this->path . '/vendor/composer/autoload_classmap.php');
+        $autoload = $this->path . '/vendor/composer/autoload_classmap.php';
+
+        if (!file_exists($autoload)) {
+            $this->log('Could not find autoloader!');
+            return [];
+        }
+
+        $files = array_unique(require $autoload);
         return $files;
     }
 
