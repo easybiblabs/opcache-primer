@@ -6,6 +6,8 @@ Scripts and tooling to prime the OPCache during deploys.
 
 ## Usage
 
+### Via HTTP & OpsWorks' deploy hook
+
 Do something like this in your frontcontroller (`index.php`):
 
 ```php
@@ -32,6 +34,10 @@ run "cd #{release_path} && #{composer_command} && #{prime_command}"
 ```
 
 **Bonus points for a proper httpd configuration which blocks access to the script.**
+
+### Via Cli
+
+See `examples/` directory for a cli implementation. (WIP)
 
 ## License
 
