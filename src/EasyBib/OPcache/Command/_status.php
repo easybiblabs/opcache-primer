@@ -1,7 +1,5 @@
 <?php
-if ('fpm-fcgi' !== PHP_SAPI) {
-    die('WRONG SAPI.');
-}
+require __DIR__ . '/__boot.php';
 
 if ('yes' === $_POST['with-scripts']) {
     var_dump(opcache_get_status(true));
