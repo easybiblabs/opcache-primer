@@ -76,7 +76,7 @@ class Juggler
             return self::ERROR_NEW_RELEASE;
         }
 
-        $primer->setPath();
+        $primer->setPath($oldRelease);
         if (1 === $primer->validate()) {
             return self::ERROR_OLD_RELEASE;
         }
