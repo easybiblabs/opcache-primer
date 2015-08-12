@@ -107,6 +107,7 @@ class Prime
                 $this->log("Success!", 'info');
                 continue;
             }
+
             // ignore errors
             $this->log("Could not compile: {$file}", 'error');
         }
@@ -128,6 +129,7 @@ class Prime
             apc_clear_cache("user");
             return 0;
         }
+
         return $this->log('Could not clear varcache - neither apc nor apcu found', 'error');
     }
 
