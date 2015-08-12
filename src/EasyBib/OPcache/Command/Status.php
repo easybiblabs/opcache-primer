@@ -11,24 +11,16 @@ class Status extends BaseCommand
         $this
             ->setName('opcache:status')
             ->setDescription('Print the status')
-            ->addArgument(
-                'fastcgi-address',
-                Input\InputArgument::REQUIRED,
-                self::DESC_FCGI_ADDRESS
-            )
-            ->addArgument(
-                'fastcgi-port',
-                Input\InputArgument::OPTIONAL,
-                self::DESC_FCGI_PORT,
-                null
-            )
-            ->addOption(
-                'scripts',
-                null,
-                Input\InputOption::VALUE_NONE,
-                'Include scripts'
-            )
         ;
+
+        $this->addStandardArguments();
+
+        $this->addOption(
+            'scripts',
+            null,
+            Input\InputOption::VALUE_NONE,
+            'Include scripts'
+        );
     }
 
     protected function execute(Input\InputInterface $input, OutputInterface $output)
@@ -50,22 +42,7 @@ class Status extends BaseCommand
          */
         $content = sprintf('with-scripts=%s', $withScripts);
 
-        $request = $connection->newRequest(
-            [
-                'FastCGI/1.0',
-                'REQUEST_METHOD' => 'POST',
-                'SCRIPT_FILENAME' => __DIR__ . '/_status.php',
-                'CONTENT_TYPE' => 'application/x-www-form-urlencoded',
-                'CONTENT_LENGTH' => strlen($content),
-            ],
-            $content
-        );
-
-        $response = $connection->request($request);
-        if (!empty($response->error)) {
-            throw new \RuntimeException($response->error);
-        }
-
+        $response = $this->makeRequest($connection, __DIR__ . '/_status.php', $content);
         $output->writeln($response->content);
     }
 }

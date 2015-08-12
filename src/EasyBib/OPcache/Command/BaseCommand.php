@@ -1,9 +1,10 @@
 <?php
 namespace EasyBib\OPcache\Command;
 
-use Crunch\FastCGI\Client as FastCGI;
+use Crunch\FastCGI;
 
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
+use Symfony\Component\Console\Input;
 
 abstract class BaseCommand extends SymfonyCommand
 {
@@ -11,11 +12,26 @@ abstract class BaseCommand extends SymfonyCommand
 
     const DESC_FCGI_PORT = 'Optional port';
 
+    protected function addStandardArguments()
+    {
+        $this->addArgument(
+            'fastcgi-address',
+            Input\InputArgument::REQUIRED,
+            self::DESC_FCGI_ADDRESS
+        );
+
+        $this->addArgument(
+            'fastcgi-port',
+            Input\InputArgument::OPTIONAL,
+            self::DESC_FCGI_PORT,
+            null
+        );
+    }
     /**
      * @param string   $address
      * @param null|int $port
      *
-     * @return \Crunch\FastCGI\Connection
+     * @return FastCGI\Connection
      */
     protected function setupFastCgiConnection($address, $port = null)
     {
@@ -23,8 +39,36 @@ abstract class BaseCommand extends SymfonyCommand
             $address = sprintf('unix://%s', $address);
         }
 
-
-        $fastcgi = new FastCGI($address, $port);
+        $fastcgi = new FastCGI\Client($address, $port);
         return $fastcgi->connect();
+    }
+
+    /**
+     * @param FastCGI\Connection $connection
+     * @param string $primaryScript
+     * @param string $content
+     *
+     * @return FastCGI\Response
+     * @throws \RuntimeException
+     */
+    protected function makeRequest(FastCGI\Connection $connection, $primaryScript, $content)
+    {
+        $request = $connection->newRequest(
+            [
+                'FastCGI/1.0',
+                'REQUEST_METHOD' => 'POST',
+                'SCRIPT_FILENAME' => $primaryScript,
+                'CONTENT_TYPE' => 'application/x-www-form-urlencoded',
+                'CONTENT_LENGTH' => strlen($content),
+            ],
+            $content
+        );
+
+        $response = $connection->request($request);
+        if (!empty($response->error)) {
+            throw new \RuntimeException($response->error);
+        }
+
+        return $response;
     }
 }

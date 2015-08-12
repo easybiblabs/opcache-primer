@@ -26,18 +26,9 @@ class Juggle extends BaseCommand
                 Input\InputArgument::REQUIRED,
                 'Path base'
             )
-            ->addArgument(
-                'fastcgi-address',
-                Input\InputArgument::REQUIRED,
-                self::DESC_FCGI_ADDRESS
-            )
-            ->addArgument(
-                'fastcgi-port',
-                Input\InputArgument::OPTIONAL,
-                self::DESC_FCGI_PORT,
-                null
-            )
         ;
+
+        $this->addStandardArguments();
     }
 
     protected function execute(Input\InputInterface $input, OutputInterface $output)
@@ -55,22 +46,7 @@ class Juggle extends BaseCommand
             $input->getArgument('path-base')
         );
 
-        $request = $connection->newRequest(
-            [
-                'FastCGI/1.0',
-                'REQUEST_METHOD' => 'POST',
-                'SCRIPT_FILENAME' => __DIR__ . '/_juggle.php',
-                'CONTENT_TYPE' => 'application/x-www-form-urlencoded',
-                'CONTENT_LENGTH' => strlen($content),
-            ],
-            $content
-        );
-
-        $response = $connection->request($request);
-        if (!empty($response->error)) {
-            throw new \RuntimeException($response->error);
-        }
-
+        $this->makeRequest($connection, __DIR__ . '/_juggle.php', $content);
         $output->writeln('Success!');
     }
 }
