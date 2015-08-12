@@ -127,10 +127,8 @@ class Prime
         } elseif (function_exists("apc_clear_cache")) {
             apc_clear_cache("user");
             return 0;
-        } else {
-            $this->logError("Could not clear varcache - neither apc nor apcu found");
-            return 1;
         }
+        return $this->log('Could not clear varcache - neither apc nor apcu found', 'error');
     }
 
     /**
