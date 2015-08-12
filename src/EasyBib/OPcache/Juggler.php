@@ -43,16 +43,6 @@ class Juggler
     private $logger;
 
     /**
-     * @var string
-     */
-    private $newRelease;
-
-    /**
-     * @var string
-     */
-    private $oldRelease;
-
-    /**
      * @param string $base
      * @param LoggerInterface|null $logger
      *
@@ -75,9 +65,6 @@ class Juggler
      */
     public function recycle($newRelease, $oldRelease)
     {
-        $this->newRelease = $newRelease;
-        $this->oldRelease = $oldRelease;
-
         $primer = new Prime($this->base, $this->logger);
         $primer->setPath($newRelease);
 
