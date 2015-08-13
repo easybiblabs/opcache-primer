@@ -18,6 +18,7 @@ use EasyBib\OPcache\Command;
 use Symfony\Component\Console\Application;
 
 $application = new Application();
+$application->add(new Command\VarCache());
 $application->add(new Command\Juggle());
 $application->add(new Command\Status());
-$application->run();
+exit($application->run());
