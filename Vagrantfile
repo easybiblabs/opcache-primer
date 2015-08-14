@@ -19,6 +19,7 @@ Vagrant::Config.run do |config|
   config.vm.provision :chef_solo do |chef|
     chef.cookbooks_path = vagrantconfig['cookbook_path']
     chef.add_recipe "easybib::role-phpapp"
+    chef.json = JSON.parse(File.read("./vagrant.json"))
     chef.log_level = vagrantconfig['chef_log_level']
   end
 end
