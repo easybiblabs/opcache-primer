@@ -10,6 +10,7 @@
  */
 namespace EasyBib\OPcache;
 
+use EasyBib\OPcache\Prime\StaleFiles;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -84,9 +85,16 @@ class Prime
      */
     public function doClean()
     {
-        $files = $this->getFilesFromAutoload();
+        $status = opcache_get_status(true);
+
+        $filter = new StaleFiles($status['scripts'], $this->path);
+        $files = $filter->filter();
+
         foreach ($files as $file) {
-            opcache_invalidate($file, true);
+            $status = opcache_invalidate($file['full_path'], true);
+            if (false === $status) {
+                $this->log(sprintf('Could not validate "%s".', $file['full_path']), 'error');
+            }
         }
 
         return 0;
