@@ -13,10 +13,15 @@
             "EasyBib\\OPcache": "src"
         }
     },
+    "bin": [
+        "bin/opcache-primer.php"
+    ],
     "require": {
         "PHP": ">=5.5.0",
         "ext-Zend-OPcache": "*",
-        "psr/log": "dev-master"
+        "crunch/fastcgi": "v1.0.1",
+        "psr/log": "1.*",
+        "symfony/console": "2.4.*"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.1",

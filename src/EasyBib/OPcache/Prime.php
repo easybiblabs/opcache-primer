@@ -10,6 +10,7 @@
  */
 namespace EasyBib\OPcache;
 
+use EasyBib\OPcache\Prime\StaleFiles;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -77,6 +78,28 @@ class Prime
     }
 
     /**
+     * Removes files from the opcache. This assumes that the files still
+     * exist on the instance in a previous checkout.
+     *
+     * @return int
+     */
+    public function doClean()
+    {
+        $status = opcache_get_status(true);
+
+        $filter = new StaleFiles($status['scripts'], $this->path);
+        $files = $filter->filter();
+
+        foreach ($files as $file) {
+            $status = opcache_invalidate($file['full_path'], true);
+            if (false === $status) {
+                $this->log(sprintf('Could not validate "%s".', $file['full_path']), 'error');
+            }
+        }
+
+        return 0;
+    }
+    /**
      * Uses composer's classmap to prime all files.
      *
      * @return int
@@ -92,6 +115,7 @@ class Prime
                 $this->log("Success!", 'info');
                 continue;
             }
+
             // ignore errors
             $this->log("Could not compile: {$file}", 'error');
         }
@@ -112,14 +136,15 @@ class Prime
         } elseif (function_exists("apc_clear_cache")) {
             apc_clear_cache("user");
             return 0;
-        } else {
-            $this->logError("Could not clear varcache - neither apc nor apcu found");
-            return 1;
         }
+
+        return $this->log('Could not clear varcache - neither apc nor apcu found', 'error');
     }
 
     /**
      * Clears opcache and varcache, repopulates opcache
+     *
+     * This should probably not be used, ever.
      *
      * @return int
      */
@@ -148,7 +173,14 @@ class Prime
 
     private function getFilesFromAutoload()
     {
-        $files = array_unique(require $this->path . '/vendor/composer/autoload_classmap.php');
+        $autoload = $this->path . '/vendor/composer/autoload_classmap.php';
+
+        if (!file_exists($autoload)) {
+            $this->log('Could not find autoloader!');
+            return [];
+        }
+
+        $files = array_unique(require $autoload);
         return $files;
     }
 

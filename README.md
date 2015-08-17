@@ -6,18 +6,15 @@ Scripts and tooling to prime the OPCache during deploys.
 
 ## Usage
 
+### Via HTTP & OpsWorks' deploy hook
+
 Do something like this in your frontcontroller (`index.php`):
 
 ```php
 if ($_SERVER['SCRIPT_NAME'] == '/opcache/prime' && $_SERVER['SERVER_ADDR'] == '127.0.0.1') {
     require dirname(__DIR__) . '/vendor/autoload.php';
-    $prime = new \EasyBib\OPcache\Prime($bibEnv);
-
-    if (0 !== ($status = $prime->setPath($_GET['p']))) {
-        exit($status);
-    }
-
-    exit($prime->doPopulate());
+    $prime = new \EasyBib\OPcache\Juggler('/srv/www/app/releases', $maybeALogger);
+    exit($prime->recycle($_GET['new'], $_GET['old']));
 }
 ```
 
@@ -30,13 +27,17 @@ Add the following to your deploy hook (AWS OpsWorks):
 
 # ...
 
-prime_command = "curl -vvv -X GET http://127.0.0.1/opcache/prime?p=#{release_path}"
+prime_command = "curl -vvv -X GET http://127.0.0.1/opcache/prime?new=#{release_path}&old=#{path}"
 prime_command << "; exit 0" # force success in case prime-opcache is not deployed
 
 run "cd #{release_path} && #{composer_command} && #{prime_command}"
 ```
 
-Bonus points for a proper httpd configuration which blocks access to the script.
+**Bonus points for a proper httpd configuration which blocks access to the script.**
+
+### Via Cli
+
+See `examples/` directory for a cli implementation. (WIP)
 
 ## License
 
