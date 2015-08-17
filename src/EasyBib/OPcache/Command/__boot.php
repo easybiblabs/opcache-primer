@@ -6,3 +6,5 @@ if ('fpm-fcgi' !== PHP_SAPI) {
 if ('POST' !== $_SERVER['REQUEST_METHOD']) {
     die('WRONG REQUEST_METHOD.' . PHP_EOL);
 }
+
+ini_set('display_errors', 1);
