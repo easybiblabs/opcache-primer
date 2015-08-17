@@ -1,5 +1,14 @@
 {
     "easybib": {
         "php_mirror_version": "56"
+    },
+    "php-opcache": {
+        "settings": {
+            "blacklist_filename": "/vagrant/tests/integration/blacklist.txt",
+            "error_log": "/var/log/php/opcache.log",
+            "log_verbosity_level": 1,
+            "max_accelerated_files": 12000,
+            "memory_consumption": "1024"
+        }
     }
 }
