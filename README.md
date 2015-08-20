@@ -35,9 +35,21 @@ run "cd #{release_path} && #{composer_command} && #{prime_command}"
 
 **Bonus points for a proper httpd configuration which blocks access to the script.**
 
-### Via Cli
+### Via Cli (WIP)
 
-See `examples/` directory for a cli implementation. (WIP)
+See `examples/` directory for a cli implementation.
+
+Also, check the console tool:
+
+```
+$ ./bin/opcache-primer.php
+```
+
+Available tasks:
+
+ * `opcache:status` (quick and dirty status dump)
+ * `opcache:juggle` (to prime a new release and remove an old one)
+ * `apcu:clear` (to clear the variable cache)
 
 ## License
 
