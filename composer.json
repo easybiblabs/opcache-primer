@@ -1,7 +1,7 @@
 {
     "name": "easybib/opcache-primer",
     "description": "Tooling to prime Zend OPcache during deploys",
-    "license": "BSD-2-Clause",
+    "license": "Apache-2.0",
     "authors": [
         {
             "name": "Till Klampaeckel",
