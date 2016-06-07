@@ -53,4 +53,4 @@ Available tasks:
 
 ## License
 
-BSD-2-Clause
+Apache-2.0
